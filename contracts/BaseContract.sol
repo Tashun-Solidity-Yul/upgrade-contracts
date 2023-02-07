@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.7;
+pragma solidity 0.8.9;
 
 import "@openzeppelin/contracts/utils/Base64.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 
     error Unauthorized();
@@ -22,8 +22,8 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
     error OperatorError();
 
 
-contract BaseContract is Ownable, AccessControl {
-    using Strings for uint256;
+contract BaseContract is OwnableUpgradeable, AccessControlUpgradeable {
+    using StringsUpgradeable for uint256;
     uint256 constant payBackShareDenominator = 2;
     uint256 constant  secondsForADay = 24 * 60 * 60;
     uint256 constant  tokenFeePerMint = 10;
@@ -51,7 +51,7 @@ contract BaseContract is Ownable, AccessControl {
     }
 
     // For Every Contract Admin role is granted to the Deployer
-    function __BaseContractInit() internal onlyInitializing {
+    function __BaseContractInit() internal initializer {
         _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
         _grantRole(ADMIN_ROLE, msg.sender);
 
