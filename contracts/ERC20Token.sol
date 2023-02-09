@@ -2,11 +2,11 @@
 pragma solidity 0.8.9;
 
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "./BaseContract.sol";
 
-contract ERC20Token is ERC20, BaseContract {
-    function initialize(string memory name, string memory symbol, uint256 initialSupply) ERC20(name, symbol) {
+contract ERC20Token is ERC20Upgradeable, BaseContract {
+    function initialize(string memory name, string memory symbol, uint256 initialSupply) external initializer {
         _mint(address(this), initialSupply * 10 ** decimals());
     }
 
