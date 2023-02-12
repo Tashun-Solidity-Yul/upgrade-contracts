@@ -6,14 +6,14 @@ import "./ERC20Token.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721ReceiverUpgradeable.sol";
 
 
-contract AuthoritativeToken is IERC721ReceiverUpgradeable, BaseContract {
-    ERC721Token private nftContract;
-    ERC20Token private ftContract;
+contract AuthoritativeToken01 is IERC721ReceiverUpgradeable, BaseContract01 {
+    ERC721Token01 private nftContract;
+    ERC20Token01 private ftContract;
     mapping(uint256 => address) private originalOwners;
     mapping(uint256 => uint256) private stakedTime;
 
 
-    function initialize(ERC721Token _ERC721TokenAddress, ERC20Token _ERC20TokenAddress) external initializer {
+    function initialize(ERC721Token01 _ERC721TokenAddress, ERC20Token01 _ERC20TokenAddress) external initializer {
         nftContract = _ERC721TokenAddress;
         ftContract = _ERC20TokenAddress;
     }
