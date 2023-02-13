@@ -22,7 +22,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
     error OperatorError();
 
 
-contract BaseContract is OwnableUpgradeable, AccessControlUpgradeable {
+contract BaseContract01 is OwnableUpgradeable, AccessControlUpgradeable {
     using StringsUpgradeable for uint256;
     uint256 constant payBackShareDenominator = 2;
     uint256 constant  secondsForADay = 24 * 60 * 60;
@@ -73,6 +73,12 @@ contract BaseContract is OwnableUpgradeable, AccessControlUpgradeable {
         success = false;
         if (returningEther > 0 && returningEther < type(uint256).max) {
             (success,) = (msg.sender).call{value : returningEther}("");
+        }
+    }
+
+    function readSlot(uint256 slot) public view returns(bytes32 ret) {
+        assembly {
+            ret := sload(slot)
         }
     }
 
