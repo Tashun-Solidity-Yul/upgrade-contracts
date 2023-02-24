@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.9;
+pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "./BaseContract.sol";
@@ -7,15 +7,28 @@ import "./ERC20Token.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721URIStorageUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC721/IERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 
-contract ERC721Token is BaseContract, ERC721URIStorageUpgradeable, UUPSUpgradeable {
+contract ERC721Token is BaseContract, ERC721URIStorageUpgradeable {
     mapping(address => uint256) private timeLockMap;
 
-    function initialize(string memory name_, string memory symbol_) external initializer {
-        __ERC721_init(name_,symbol_);
-         __ERC721URIStorage_init();
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(string memory name_, string memory symbol_, address ownerAddress) external initializer {
+        __ERC721_init(name_, symbol_);
+        __ERC721URIStorage_init();
+
+        _setRoleAdmin(OWNER_ROLE, OWNER_ROLE);
+        _setupRole(OWNER_ROLE, ownerAddress);
+
+        _setRoleAdmin(EXECUTIVE_ROLE, EXECUTIVE_ROLE);
+    }
+
+    function setupExecutiveRole(address executiveAddress) external onlyRole(OWNER_ROLE) {
+        _setupRole(EXECUTIVE_ROLE, executiveAddress);
     }
 
     function supportsInterface(bytes4 interfaceId) public view override(AccessControlUpgradeable, ERC721Upgradeable) returns (bool) {
@@ -25,7 +38,7 @@ contract ERC721Token is BaseContract, ERC721URIStorageUpgradeable, UUPSUpgradeab
         super.supportsInterface(interfaceId);
     }
 
-    function mintNewNFTThroughContract(address receiver) external onlyRole(ADMIN_ROLE) {
+    function mintNewNFTThroughContract(address receiver) external onlyRole(EXECUTIVE_ROLE) {
         if (timeLockMap[receiver] > block.timestamp) {
             revert ComeBackTomorrow();
         }
@@ -34,20 +47,17 @@ contract ERC721Token is BaseContract, ERC721URIStorageUpgradeable, UUPSUpgradeab
     }
 
     function processMint(address receiver) private {
-        uint256 selectedURIId = getRandomUint256(getTokenId()) % uniqueTokenCount;
+        uint256 selectedURIId = getNextToken();
         timeLockMap[receiver] = block.timestamp + secondsForADay;
         incrementTokenId();
-        _setTokenURI(getTokenId(), string(abi.encodePacked(uriBaseLocation, StringsUpgradeable.toString(selectedURIId))));
         _safeMint(receiver, getTokenId());
+        _setTokenURI(getTokenId(), string.concat(uriBaseLocation, StringsUpgradeable.toString(selectedURIId)));
     }
 
 
-    function getRandomUint256(uint256 input) private view returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(block.difficulty, block.timestamp, input)));
+    function getNextToken() private view returns (uint256) {
+        return getTokenId() + 1;
     }
 
-    function _authorizeUpgrade(address newImplementation) internal virtual override {
-//        require("");
-    }
 
 }
