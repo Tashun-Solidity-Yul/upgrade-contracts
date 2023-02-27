@@ -5,7 +5,7 @@ pragma solidity 0.8.17;
 //import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "clones-with-immutable-args/Clone.sol";
 import "hardhat/console.sol";
-import "../ERC20Token.sol";
+import "../../ERC20Token.sol";
 
 contract ECR20BaseTokenV2 is ERC20Token {
 //    constructor(
