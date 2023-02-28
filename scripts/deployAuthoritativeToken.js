@@ -15,35 +15,73 @@ const { ethers, upgrades } = require('hardhat');
 
 async function deployAuthoritativeTokenUsingTransparentProxyPattern() {
 
-  const erc20ContractProxyAddress= "0x90a71747814B2DE1D1250051f5Eed171AA365Df9";
-  const erc721ContractProxyAddress= "0x53c10175cFf64a3b88C0c769432CEbfAAB709779";
+  const erc20ContractProxyAddress= "0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650";
+  const erc721ContractProxyAddress= "0x927b167526bAbB9be047421db732C663a0b77B11";
   const [signer] = await hre.ethers.getSigners()
   const ERC20Token = await hre.ethers.getContractFactory("ERC20Token", signer);
   const ERC721Token = await ethers.getContractFactory("ERC721Token",signer);
   const AuthoritativeToken = await ethers.getContractFactory("AuthoritativeToken",signer);
-  const authoritativeToken = await upgrades.deployProxy(AuthoritativeToken, [erc721ContractProxyAddress, erc20ContractProxyAddress, signer.address], {
+  const authoritativeTokenProxy = await upgrades.deployProxy(AuthoritativeToken, [erc721ContractProxyAddress, erc20ContractProxyAddress, signer.address], {
     initializer: "initialize",
   });
-  await authoritativeToken.deployed()
-  console.log("authoritativeToken : " + authoritativeToken.address);
+  await authoritativeTokenProxy.deployed()
+  console.log("authoritativeTokenProxy : " + authoritativeTokenProxy.address);
 
-  await hre.run("verify:verify", {
-    address: authoritativeToken.address,
-  });
+  // await hre.run("verify:verify", {
+  //   address: authoritativeToken.address,
+  // });
 
 
   const erc721ContractProxyWithABISupport = await ERC721Token.attach(erc721ContractProxyAddress);
   const erc20ContractProxyWithABISupport = await ERC20Token.attach(erc20ContractProxyAddress);
+  const authoritativeContractProxyWithABISupport = await AuthoritativeToken.attach(
+      authoritativeTokenProxy.address,
+  );
 
-  const tnx1 = await erc721ContractProxyWithABISupport.connect(signer).setupExecutiveRole(authoritativeToken.address);
-  await tnx1.wait()
-  const tnx2 = await erc20ContractProxyWithABISupport.connect(signer).setupExecutiveRole(authoritativeToken.address);
-  await tnx2.wait()
+  const tnx1 = await erc721ContractProxyWithABISupport.connect(signer).setupExecutiveRole(authoritativeTokenProxy.address);
+  await tnx1.wait();
+  const tnx2 = await erc20ContractProxyWithABISupport.connect(signer).setupExecutiveRole(authoritativeTokenProxy.address);
+  await tnx2.wait();
 
   // const ERC721WithGodMod = await ethers.getContractFactory("ERC721WithGodMod");
   //
   // const eRC721WithGodMod = await upgrades.upgradeProxy(erc721ContractProxy.address, ERC721WithGodMod);
   // await eRC721WithGodMod.deployed();
+
+
+  // console.log(await erc721ContractProxyWithABISupport.OWNER_ROLE())
+  // console.log(
+  //     await erc721ContractProxyWithABISupport.getRoleAdmin(
+  //         await authoritativeContractProxyWithABISupport.OWNER_ROLE(),
+  //     ),
+  // )
+  // console.log(
+  //     await erc721ContractProxyWithABISupport.hasRole(
+  //         await authoritativeContractProxyWithABISupport.OWNER_ROLE(),
+  //         signer.address,
+  //     ),
+  // )
+  // await erc721ContractProxyWithABISupport.mintNewNFTThroughContract(signer.address)
+  const tnx3 = await erc20ContractProxyWithABISupport
+      .connect(signer)
+      .approve(authoritativeTokenProxy.address, 10n ** 17n)
+  await tnx3.wait()
+  console.log(await erc20ContractProxyWithABISupport.balanceOf(signer.address))
+  // console.log(await erc721ContractProxyWithABISupport.ownerOf(1))
+  const tnx4 = await authoritativeContractProxyWithABISupport
+      .connect(signer)
+      .mintNFT()
+  await tnx4.wait()
+  // await expect(
+  //     erc721ContractProxyWithABISupport
+  //         .connect(signer)
+  //         .mintNewNFTThroughContract(signer.address),
+  // ).to.be.reverted
+  console.log(await erc721ContractProxyWithABISupport.ownerOf(1));
+  const tnx5 = await erc721ContractProxyWithABISupport.connect(signer).approve(authoritativeContractProxyWithABISupport.address, 1)
+  await tnx5.wait()
+  // const tnx6 = await authoritativeContractProxyWithABISupport.depositNFT(1)
+  // await tnx6.wait()
 
 }
 
