@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.9;
+pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/utils/Base64.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -22,7 +21,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
     error OperatorError();
 
 
-contract BaseContract01 is OwnableUpgradeable, AccessControlUpgradeable {
+contract BaseContract is AccessControlUpgradeable {
     using StringsUpgradeable for uint256;
     uint256 constant payBackShareDenominator = 2;
     uint256 constant  secondsForADay = 24 * 60 * 60;
@@ -34,10 +33,11 @@ contract BaseContract01 is OwnableUpgradeable, AccessControlUpgradeable {
     uint256 constant  pricePerOneToken = 1_000_000_000_000_000;
     uint256 constant  initialSalesSupply = 10_000_000 * 10 ** 18;
     uint256 constant  payBackFactor = 0.5 ether;
-    uint256 constant  nftPriceWithoutDecimals = 10;
+    uint256 constant  nftPrice = 1 * 10 ** 17;
     mapping(address => bool) internal blacklistMap;
     mapping(uint256 => string) internal colorMapping;
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+    bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
+    bytes32 public constant EXECUTIVE_ROLE = keccak256("EXECUTIVE_ROLE");
     uint256 private tokenId;
     string constant internal uriBaseLocation = "ipfs://bafybeier7fbra5lubfy53rvhhg56cauamnbn7ktlhkcuqjbwlpwb2xv4dm/";
 
@@ -51,10 +51,8 @@ contract BaseContract01 is OwnableUpgradeable, AccessControlUpgradeable {
     }
 
     // For Every Contract Admin role is granted to the Deployer
-    function __BaseContractInit() internal initializer {
-        _setRoleAdmin(ADMIN_ROLE, ADMIN_ROLE);
-        _grantRole(ADMIN_ROLE, msg.sender);
-
+    function __BaseContractInit() internal onlyInitializing {
+        __AccessControl_init();
     }
 
     function checkSufficientFunds(uint256 fundLimit) internal view {
