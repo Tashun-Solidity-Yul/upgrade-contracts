@@ -13,7 +13,7 @@ const {getProxyAdminFactory} = require("@openzeppelin/hardhat-upgrades/dist/util
 
 // npx hardhat run .\scripts\deployERC20.js --network goreli
 // npx hardhat verify --network goreli 0xd3b00625ab66fbe9a2ad9cd4b751de91ec413bc5
-async function main() {
+async function deployERC20TokenContractUsingTransparentProxyPattern() {
   const [signer] = await hre.ethers.getSigners()
   console.log(signer.address)
   const ERC20Token = await hre.ethers.getContractFactory("ERC20Token", signer);
@@ -34,7 +34,7 @@ async function main() {
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
-main().catch((error) => {
+deployERC20TokenContractUsingTransparentProxyPattern().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });

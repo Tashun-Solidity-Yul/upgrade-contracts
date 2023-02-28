@@ -13,7 +13,7 @@ const { ethers, upgrades } = require('hardhat');
 // npx hardhat run .\scripts\deployAuthoritativeToken.js --network goreli
 // npx hardhat verify --network goreli 0xeB71f489CF795BEcD8Cdd3A0AFDf45307F087561
 
-async function main() {
+async function deployAuthoritativeTokenUsingTransparentProxyPattern() {
 
   const erc20ContractProxyAddress= "0x90a71747814B2DE1D1250051f5Eed171AA365Df9";
   const erc721ContractProxyAddress= "0x53c10175cFf64a3b88C0c769432CEbfAAB709779";
@@ -51,7 +51,7 @@ async function main() {
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
-main().catch((error) => {
+deployAuthoritativeTokenUsingTransparentProxyPattern().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });

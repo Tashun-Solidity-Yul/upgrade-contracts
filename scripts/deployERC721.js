@@ -12,7 +12,7 @@ const hre = require("hardhat");
 
 // npx hardhat run .\scripts\deployERC721.js --network goreli
 // npx hardhat verify --network goreli 0x869fffdbd019bd9d5ce45f7430c4cbf2bee406a8
-async function main() {
+async function deployERC721TokenUsingTransparentProxyPattern() {
 
   const [signer] = await hre.ethers.getSigners()
   const ERC721Token = await ethers.getContractFactory("ERC721Token",signer);
@@ -33,7 +33,7 @@ async function main() {
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
-main().catch((error) => {
+deployERC721TokenUsingTransparentProxyPattern().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
