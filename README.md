@@ -1,19 +1,35 @@
-# Sample Hardhat Project
+# Upgradable Smart Contract Patterns
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+This project includes
+1. UUPS Proxy Pattern
+2. Transparent Proxy Pattern
+3. Clone Factory Pattern, with and without arguments
+4. Way to upgrade proxies hardhat and javascript
+5. tests
 
-Try running some of the following tasks:
+
+Helpful commands and contract references
 
 ```shell
-npx hardhat help
 npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deployERC20.js
-```
 npx hardhat verify --network goreli 0x9AfE6d2B7C0cE89E3CC45CA8F8E036fd21EEA97A
 npx hardhat verify --network goreli 0xA734Da4C28D5ED383C0f6e9Fd152B7DCeC576837
 npx hardhat verify --network goreli 0x70772F2b03BCbD1881c6040f3D474D9dbd81e565
+
+```
+
+Used Environmental Variables
+
+```
+ALCHEMY_MUMBAI_TESTNET_RPC_URL
+ALCHEMY_GORELI_TESTNET_RPC_URL
+INFURA_GORELI_TESTNET_RPC_URL
+POLYGON_MUMBAI_RPC
+PRIVATE_KEY
+ETHERSCAN_API_KEY
+REPORT_GAS: FALSE
+```
+
 
 
 
